@@ -1,0 +1,31 @@
+node_modules/
+.next/
+dist/
+build/
+.cache/
+.turbo/
+*.log
+.env
+.env.local
+.env.*.local
+.DS_Store
+coverage/
+.nyc_output/
+
+# Bun
+bun.lock
+bun.lockb
+node_modules.bun
+
+# Next.js / Vercel
+.vercel
+
+# IDEs and OS
+.vscode/
+.idea/
+Thumbs.db
+
+# TypeScript / Build
+*.tsbuildinfo
+.eslintcache
+.playwright-mcp/

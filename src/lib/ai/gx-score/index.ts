@@ -1,0 +1,17 @@
+export { calculateGXScore } from './calculate-gx-score';
+export { enforceAntiGaming } from './anti-gaming-guard';
+export { resolveGradeBracket } from './grade-bracket-resolver';
+export { recordScoreHistory } from './history-tracker';
+export { generateRecommendations } from './recommendation-generator';
+export { scoreAcademicReadiness } from './dimensions/academic-readiness';
+export { scoreTechnicalSkills } from './dimensions/technical-skills';
+export { scoreCommunication } from './dimensions/communication';
+export { scoreLeadership } from './dimensions/leadership';
+export { scoreProjectExperience } from './dimensions/project-experience';
+export { scoreInternshipExperience } from './dimensions/internship-experience';
+export { scoreInternationalExposure } from './dimensions/international-exposure';
+export { scoreCertifications } from './dimensions/certifications';
+export { scorePortfolioQuality } from './dimensions/portfolio-quality';
+export { scoreInterviewReadiness } from './dimensions/interview-readiness';
+export { scoreLanguages } from './dimensions/languages';
+export { scoreIndustrySkills } from './dimensions/industry-skills';

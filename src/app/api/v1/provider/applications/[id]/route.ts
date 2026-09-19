@@ -1,0 +1,104 @@
+import { NextResponse, type NextRequest } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const supabase = await createServerSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, data: null, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
+        { status: 401 }
+      );
+    }
+
+    // Verify provider role
+    const userRole = user.user_metadata?.role;
+    if (userRole !== 'employer' && userRole !== 'provider') {
+      return NextResponse.json(
+        { success: false, data: null, error: { code: 'FORBIDDEN', message: 'Provider access required' } },
+        { status: 403 }
+      );
+    }
+
+    // Get provider profile
+    const { data: providerProfile, error: profileError } = await supabase
+      .from('program_provider_profiles')
+      .select('organization_id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (profileError || !providerProfile) {
+      return NextResponse.json(
+        { success: false, data: null, error: { code: 'PROFILE_NOT_FOUND', message: 'Provider profile not found' } },
+        { status: 404 }
+      );
+    }
+
+    // Get the application and verify it belongs to provider's program
+    const { data: application, error: appError } = await supabase
+      .from('applications')
+      .select('id, opportunity_id, status')
+      .eq('id', id)
+      .is('deleted_at', null)
+      .single();
+
+    if (appError || !application) {
+      return NextResponse.json(
+        { success: false, data: null, error: { code: 'NOT_FOUND', message: 'Application not found' } },
+        { status: 404 }
+      );
+    }
+
+    // Verify the program belongs to this provider
+    const { data: program, error: programError } = await supabase
+      .from('opportunities')
+      .select('id, organization_id')
+      .eq('id', application.opportunity_id)
+      .single();
+
+    if (programError || !program || program.organization_id !== providerProfile.organization_id) {
+      return NextResponse.json(
+        { success: false, data: null, error: { code: 'FORBIDDEN', message: 'You do not have access to this application' } },
+        { status: 403 }
+      );
+    }
+
+    const body = await request.json();
+
+    // Validate status
+    const validStatuses = ['submitted', 'under_review', 'accepted', 'rejected', 'waitlisted'];
+    if (!body.status || !validStatuses.includes(body.status)) {
+      return NextResponse.json(
+        { success: false, data: null, error: { code: 'VALIDATION_ERROR', message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` } },
+        { status: 400 }
+      );
+    }
+
+    const { data: updated, error: updateError } = await supabase
+      .from('applications')
+      .update({ status: body.status })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (updateError) {
+      return NextResponse.json(
+        { success: false, data: null, error: { code: 'UPDATE_ERROR', message: updateError.message } },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: updated, error: null });
+  } catch (err) {
+    return NextResponse.json(
+      { success: false, data: null, error: { code: 'INTERNAL_ERROR', message: (err as Error).message } },
+      { status: 500 }
+    );
+  }
+}

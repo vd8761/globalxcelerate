@@ -1,0 +1,76 @@
+export const GX_SCORING_RUBRICS = {
+  academic_readiness: {
+    gpa_weight: 0.5,
+    degree_level_weight: 0.3,
+    field_relevance_weight: 0.2,
+    degree_bonus: { phd: 20, masters: 15, bachelors: 5, associate: 2 },
+    gpa_scale: 4.0,
+    gpa_multiplier: 25,
+  },
+  technical_skills: {
+    per_skill_base: 5,
+    proficiency_multiplier: { beginner: 1, intermediate: 2, advanced: 3, expert: 4 },
+    verified_bonus: 1.5,
+    max_skills_counted: 20,
+  },
+  communication: {
+    language_weight: 0.4,
+    writing_weight: 0.3,
+    presentation_weight: 0.3,
+    language_proficiency_scale: { A1: 10, A2: 25, B1: 40, B2: 60, C1: 80, C2: 100 },
+  },
+  leadership: {
+    role_base_score: 15,
+    team_size_bonus: { small: 5, medium: 10, large: 15 },
+    duration_multiplier: 0.5,
+    diminishing_factor: 0.7,
+  },
+  project_experience: {
+    per_project_base: 10,
+    complexity_multiplier: { simple: 1, moderate: 1.5, complex: 2, advanced: 2.5 },
+    recency_bonus: 1.2,
+    variety_bonus: 5,
+  },
+  internship_experience: {
+    per_month_base: 3,
+    relevance_multiplier: { low: 0.5, medium: 1, high: 1.5 },
+    brand_recognition_bonus: 1.5,
+  },
+  international_exposure: {
+    per_country_base: 15,
+    duration_multiplier: { short: 1, medium: 1.5, long: 2 },
+    study_abroad_bonus: 20,
+    international_cert_bonus: 10,
+  },
+  certifications: {
+    per_cert_base: 12,
+    issuer_weight: { standard: 1, recognized: 1.3, premium: 1.5 },
+    premium_issuers: ['AWS', 'Google', 'Microsoft', 'Meta', 'IBM', 'Oracle', 'Cisco', 'Salesforce'],
+    recency_decay: 0.9,
+  },
+  portfolio_quality: {
+    per_item_base: 8,
+    variety_bonus: 10,
+    external_link_bonus: 5,
+    recency_multiplier: 1.2,
+    section_types: ['projects', 'publications', 'media', 'achievements'],
+  },
+  interview_readiness: {
+    mock_interview_score: 20,
+    assessment_weight: 0.4,
+    cert_bonus: 10,
+    profile_completeness_weight: 0.3,
+  },
+  languages: {
+    per_language_base: 15,
+    proficiency_scale: { A1: 10, A2: 25, B1: 40, B2: 60, C1: 80, C2: 100 },
+    rare_language_bonus: 10,
+    rare_languages: ['Mandarin', 'Japanese', 'Korean', 'Arabic', 'Russian', 'Hindi'],
+  },
+  industry_skills: {
+    high_demand_skills: ['AI/ML', 'Cloud Computing', 'Data Science', 'Cybersecurity', 'Blockchain', 'DevOps', 'UX Design', 'Product Management'],
+    high_demand_multiplier: 1.5,
+    alignment_score_base: 8,
+    market_relevance_bonus: 10,
+  },
+};

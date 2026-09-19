@@ -1,0 +1,12 @@
+export { calculateMatchScore } from './calculate-match-score';
+export { processBatchMatching } from './batch-processor';
+export { resolveWeights } from './weight-resolver';
+export { analyzeSkillGaps } from './skill-gap-analyzer';
+export { getCachedScore, cacheScore, invalidateStudentScores, invalidateOpportunityScores } from './cache-manager';
+export { generateExplanation } from './explanation-generator';
+export { calculateSkillsScore } from './dimensions/skills-scorer';
+export { calculateAcademicScore } from './dimensions/academic-scorer';
+export { calculateExperienceScore } from './dimensions/experience-scorer';
+export { calculateGeographyScore } from './dimensions/geography-scorer';
+export { calculateAvailabilityScore } from './dimensions/availability-scorer';
+export { calculateMobilityScore } from './dimensions/mobility-scorer';
