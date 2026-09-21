@@ -46,6 +46,19 @@ export async function middleware(request: NextRequest) {
 
     // Public paths - no auth required
     if (pathname === '/' || pathname.startsWith('/api/auth/health')) {
+      // Catch Supabase auth errors redirecting to root
+      const error = request.nextUrl.searchParams.get('error');
+      const errorDescription = request.nextUrl.searchParams.get('error_description');
+      
+      if (error && pathname === '/') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/login';
+        url.searchParams.set('error', errorDescription || error);
+        // Clear the original error params to avoid duplicate/messy URLs
+        url.searchParams.delete('error_code');
+        url.searchParams.delete('error_description');
+        return NextResponse.redirect(url);
+      }
       return response;
     }
 
