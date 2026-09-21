@@ -20,16 +20,17 @@ export default async function OnboardingPage() {
     redirect('/login');
   }
 
-  // Check student_profiles for onboarding status
-  const { data: profile } = await supabase
-    .from('student_profiles')
-    .select('onboarding_completed, profile_completion')
-    .eq('user_id', user.id)
-    .single();
-
-  if (profile?.onboarding_completed) {
+  // Check if onboarding is completed via user_metadata
+  if (user.user_metadata?.onboarding_completed) {
     redirect('/student/dashboard');
   }
+
+  // Check student_profiles for completion status just in case
+  const { data: profile } = await supabase
+    .from('student_profiles')
+    .select('profile_completion')
+    .eq('user_id', user.id)
+    .maybeSingle();
 
   // Determine current step from user metadata or default to 1
   const currentStep = user.user_metadata?.onboarding_step ?? 1;

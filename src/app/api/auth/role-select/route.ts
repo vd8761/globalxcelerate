@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { ROLE_ONBOARDING } from '@/lib/auth/constants';
 import { z } from 'zod';
 import type { UserRole } from '@/types/auth';
@@ -17,24 +16,9 @@ const ROLE_PROFILE_TABLES: Record<UserRole, string> = {
   platform_admin: 'platform_admin_profiles',
 };
 
-function createReadOnlyCookieClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-  return createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      async getAll() {
-        const cookieStore = await cookies();
-        return cookieStore.getAll();
-      },
-      setAll() {},
-    },
-  });
-}
-
 export async function POST(request: Request) {
   try {
-    const supabase = createReadOnlyCookieClient();
+    const supabase = await createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -85,18 +69,32 @@ export async function POST(request: Request) {
     }
 
     const profileTable = ROLE_PROFILE_TABLES[role];
-    const { data: profileData, error: profileError } = await supabase
+    
+    // Check if profile already exists first
+    let { data: profileData } = await supabase
       .from(profileTable)
-      .insert({ user_id: user.id, onboarding_status: 'not_started' })
       .select('id')
+      .eq('user_id', user.id)
       .single();
-
-    if (profileError) {
-      await supabase.auth.updateUser({ data: { role: null, onboarding_completed: null } });
-      return NextResponse.json(
-        { success: false, error: { code: 'SYS_001', message: 'Failed to create profile. Please try again.' } },
-        { status: 500 }
-      );
+      
+    // If it doesn't exist, create it
+    if (!profileData) {
+      const { data: newProfileData, error: profileError } = await supabase
+        .from(profileTable)
+        .insert({ user_id: user.id })
+        .select('id')
+        .single();
+        
+      if (profileError) {
+        console.error('[RoleSelect] profileError:', profileError);
+        // We do not revert the role here because it might cause sync issues if the cookie is already set
+        // The user can just try again, or they can use the role without a profile (though not ideal, they'll get caught by onboarding checks)
+        return NextResponse.json(
+          { success: false, error: { code: 'SYS_001', message: `Failed to create profile: ${profileError.message}` } },
+          { status: 500 }
+        );
+      }
+      profileData = newProfileData;
     }
 
     return NextResponse.json({

@@ -27,18 +27,50 @@ export default async function DashboardPage() {
   }
 
   // Fetch student profile
-  const { data: profile } = await supabase
+  let { data: profile, error } = await supabase
     .from('student_profiles')
-    .select('first_name, last_name, profile_photo_url, profile_completion, gx_score, onboarding_status, user_id')
+    .select('*')
     .eq('user_id', user.id)
-    .single();
+    .maybeSingle();
 
-  if (!profile || profile.onboarding_status !== 'complete') {
+  if (error) {
+    console.error('[Dashboard] Error fetching profile:', error.message || error, error.details || '');
+  }
+
+  // Check if onboarding is complete via user_metadata as a fallback
+  const isOnboardingComplete = user.user_metadata?.onboarding_completed === true;
+
+  // If the profile is completely missing (due to earlier failures), create a blank one
+  if (!profile && !error && isOnboardingComplete) {
+    const { data: newProfile, error: insertError } = await supabase
+      .from('student_profiles')
+      .insert({ user_id: user.id })
+      .select('*')
+      .single();
+      
+    if (insertError) {
+      console.error('[Dashboard] Failed to auto-create missing profile:', insertError.message);
+    } else {
+      profile = newProfile;
+    }
+  }
+
+  // Prevent infinite redirect loops: if onboarding is complete but profile still fails, just render with empty profile
+  if (!isOnboardingComplete && !profile) {
     redirect('/student/onboarding');
   }
 
+  // Provide a fallback profile if it's still null due to a persistent database error
+  const safeProfile = profile || {
+    first_name: 'Student',
+    last_name: '',
+    profile_photo_url: null,
+    profile_completion: 0,
+    gx_score: null,
+  };
+
   // Compute GX grade
-  const gxScore = profile.gx_score || null;
+  const gxScore = safeProfile.gx_score || null;
   let gxGrade: string | null = null;
   if (gxScore !== null) {
     if (gxScore >= 90) gxGrade = 'A+';
@@ -55,12 +87,12 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Greeting — full width */}
         <GreetingHeader
-          firstName={profile.first_name || 'Student'}
-          profilePhotoUrl={profile.profile_photo_url}
+          firstName={safeProfile.first_name || 'Student'}
+          profilePhotoUrl={safeProfile.profile_photo_url}
         />
 
         {/* Profile completion + GX Score side by side */}
-        <ProfileCompletionWidget completionPercentage={profile.profile_completion || 0} />
+        <ProfileCompletionWidget completionPercentage={safeProfile.profile_completion || 0} />
         <GXScoreWidget score={gxScore} grade={gxGrade} />
 
         {/* Quick actions — full width */}
