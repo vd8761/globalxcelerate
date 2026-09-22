@@ -140,7 +140,7 @@ export function ProfileContent({ profile, email }: ProfileContentProps) {
 
             <div className="pt-4">
               <Link
-                href="/student/onboarding"
+                href="/student/onboarding/identity"
                 className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
               >
                 Edit Profile

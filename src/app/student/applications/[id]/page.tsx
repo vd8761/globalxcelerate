@@ -40,7 +40,6 @@ export default async function ApplicationDetailPage({ params }: Props) {
         duration_months, compensation_type, deadline,
         organizations (id, name, logo_url, website)
       ),
-      application_documents (*),
       application_status_history (*)
     `)
     .eq('id', id)
@@ -80,7 +79,7 @@ export default async function ApplicationDetailPage({ params }: Props) {
       deadline: opp?.deadline ?? null,
       organization: opp?.organizations ?? { id: '', name: 'Unknown', logo_url: null, website: null },
     },
-    documents: (application.application_documents as unknown[]) ?? [],
+    documents: [],
     status_history: ((application.application_status_history as unknown[]) ?? []).sort(
       (a: unknown, b: unknown) => new Date((b as { created_at: string }).created_at).getTime() - new Date((a as { created_at: string }).created_at).getTime()
     ),

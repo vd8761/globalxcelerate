@@ -35,7 +35,7 @@ export function ProfileCompletionWidget({ completionPercentage }: ProfileComplet
                 Complete your profile to unlock more opportunities
               </p>
               <Link
-                href="/student/onboarding"
+                href="/student/profile"
                 className="inline-block mt-2 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
               >
                 Complete Profile →

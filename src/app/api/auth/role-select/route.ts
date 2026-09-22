@@ -28,13 +28,6 @@ export async function POST(request: Request) {
       );
     }
 
-    if (user.user_metadata?.role) {
-      return NextResponse.json(
-        { success: false, error: { code: 'BIZ_001', message: 'Role already assigned.' } },
-        { status: 409 }
-      );
-    }
-
     const body = await request.json();
     const parsed = schema.safeParse(body);
 
@@ -46,6 +39,24 @@ export async function POST(request: Request) {
     }
 
     const { role } = parsed.data;
+
+    // If role is already assigned, just redirect them to the correct dashboard/setup
+    if (user.user_metadata?.role) {
+      if (user.user_metadata.role !== role) {
+        return NextResponse.json(
+          { success: false, error: { code: 'BIZ_001', message: `You are already registered as a ${user.user_metadata.role}.` } },
+          { status: 409 }
+        );
+      }
+      // If it's the same role they already have, just succeed and redirect
+      return NextResponse.json({
+        success: true,
+        data: {
+          role,
+          redirectTo: ROLE_ONBOARDING[role as UserRole],
+        },
+      });
+    }
 
     if (role === 'platform_admin') {
       const isEligible = user.email?.endsWith('@globalxcelerate.com') || false;

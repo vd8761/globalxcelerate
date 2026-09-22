@@ -12,7 +12,7 @@ export const APPLICATION_STAGES = [
 
 export const QUICK_ACTION_ITEMS = [
   { label: 'Browse Opportunities', href: '/student/marketplace', icon: 'Search' },
-  { label: 'Edit Profile', href: '/student/onboarding', icon: 'User' },
+  { label: 'Edit Profile', href: '/student/profile', icon: 'User' },
   { label: 'View Applications', href: '/student/applications', icon: 'FileText' },
   { label: 'GX Score', href: '/student/gx-score', icon: 'Award' },
 ] as const;

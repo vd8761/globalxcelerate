@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     // Verify provider role
     const userRole = user.user_metadata?.role;
-    if (userRole !== 'employer' && userRole !== 'provider') {
+    if (userRole !== 'employer' && userRole !== 'program_provider') {
       return NextResponse.json(
         { success: false, data: null, error: { code: 'FORBIDDEN', message: 'Provider access required' } },
         { status: 403 }
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
 
     // Verify provider role
     const userRole = user.user_metadata?.role;
-    if (userRole !== 'employer' && userRole !== 'provider') {
+    if (userRole !== 'employer' && userRole !== 'program_provider') {
       return NextResponse.json(
         { success: false, data: null, error: { code: 'FORBIDDEN', message: 'Provider access required' } },
         { status: 403 }
@@ -231,6 +231,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (createError) {
+      console.error('[Create Program Error]', createError);
       return NextResponse.json(
         { success: false, data: null, error: { code: 'CREATE_ERROR', message: createError.message } },
         { status: 500 }

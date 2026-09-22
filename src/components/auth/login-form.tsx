@@ -220,14 +220,6 @@ export function LoginForm() {
         )}
       </button>
 
-      {/* Phone Login Link */}
-      <Link
-        href="/verify-otp"
-        className="w-full h-10 rounded-lg border border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] hover:border-[#CBD5E1] font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2"
-      >
-        <Phone className="w-4 h-4" />
-        Sign in with Phone
-      </Link>
     </form>
   );
 }

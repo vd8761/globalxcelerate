@@ -30,10 +30,9 @@ export function ProgressBar({ currentStep, stepStatuses, completionPercentage, o
               key={step.slug}
               className={cn(
                 'h-2 flex-1 rounded-full transition-all duration-300 ease-in-out',
-                status === 'completed' && 'bg-slate-700',
-                isActive && status !== 'completed' && 'bg-[hsl(187,96%,42%)]',
-                status === 'skipped' && !isActive && 'bg-slate-300',
-                status === 'pending' && !isActive && 'bg-slate-200',
+                isActive ? 'bg-[hsl(187,96%,42%)]' : 
+                status === 'completed' ? 'bg-slate-700' : 
+                status === 'skipped' ? 'bg-slate-300' : 'bg-slate-200'
               )}
             />
           );
@@ -66,6 +65,7 @@ export function ProgressBar({ currentStep, stepStatuses, completionPercentage, o
                   isActive && status !== 'completed' && 'bg-[hsl(187,96%,42%)] text-white shadow-md shadow-cyan-200',
                   status === 'skipped' && !isActive && 'bg-slate-300 text-slate-500',
                   status === 'pending' && !isActive && 'bg-slate-200 text-slate-400',
+                  isActive && 'ring-2 ring-offset-2 ring-[hsl(187,96%,42%)]',
                   isClickable && 'group-hover:scale-110',
                 )}
               >

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     // Verify provider role
     const userRole = user.user_metadata?.role;
-    if (userRole !== 'employer' && userRole !== 'provider') {
+    if (userRole !== 'employer' && userRole !== 'program_provider') {
       return NextResponse.json(
         { success: false, data: null, error: { code: 'FORBIDDEN', message: 'Provider access required' } },
         { status: 403 }
@@ -61,8 +61,20 @@ export async function GET(request: NextRequest) {
     // Status filter
     if (status) {
       const statuses = status.split(',').map((s) => s.trim()).filter(Boolean);
-      if (statuses.length > 0) {
-        query = query.in('status', statuses);
+      const validDbStatuses = ['submitted', 'under_review', 'shortlisted', 'interview', 'offered', 'accepted', 'rejected', 'withdrawn'];
+      const validStatuses = statuses.filter(s => validDbStatuses.includes(s));
+
+      if (statuses.length > 0 && validStatuses.length === 0) {
+        return NextResponse.json({
+          success: true,
+          data: [],
+          error: null,
+          meta: { page, per_page, total: 0, total_pages: 0 },
+        });
+      }
+
+      if (validStatuses.length > 0) {
+        query = query.in('status', validStatuses);
       }
     }
 
@@ -146,7 +158,7 @@ export async function PATCH(request: NextRequest) {
 
     // Verify provider role
     const userRole = user.user_metadata?.role;
-    if (userRole !== 'employer' && userRole !== 'provider') {
+    if (userRole !== 'employer' && userRole !== 'program_provider') {
       return NextResponse.json(
         { success: false, data: null, error: { code: 'FORBIDDEN', message: 'Provider access required' } },
         { status: 403 }

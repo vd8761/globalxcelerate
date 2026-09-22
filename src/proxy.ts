@@ -3,7 +3,7 @@ import { createMiddlewareClient } from '@/lib/supabase/middleware';
 import { SECURITY_HEADERS } from '@/lib/auth/constants';
 import type { UserRole } from '@/types/auth';
 
-const AUTH_PAGES = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email', '/verify-otp'];
+const AUTH_PAGES = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email', '/verify-otp', '/admin-login'];
 const ROLE_SELECT_PAGE = '/role-select';
 
 const PROTECTED_PREFIX_ROLE: Record<string, UserRole> = {
@@ -22,7 +22,7 @@ const ROLE_DASHBOARDS: Record<UserRole, string> = {
   platform_admin: '/admin/dashboard',
 };
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   console.log('[Middleware]', request.method, pathname);
 

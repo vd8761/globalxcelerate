@@ -187,12 +187,16 @@ export const useOnboardingStore = create<OnboardingState>()(
       hydrateFromServer: (progress, stepData) =>
         set((state) => ({
           ...state,
-          currentStep: progress.current_step,
           stepStatuses: progress.step_statuses ?? { ...defaultStatuses },
           completionPercentage: progress.completion_percentage,
           startedAt: progress.started_at,
           lastSavedAt: progress.last_saved_at,
-          ...(stepData.identity ? { identity: stepData.identity as IdentityData } : {}),
+          ...(stepData.identity ? { 
+            identity: {
+              ...(stepData.identity as IdentityData),
+              date_of_birth: (stepData.identity as IdentityData).date_of_birth?.substring(0, 10) || ''
+            }
+          } : {}),
           ...(stepData.education ? { education: stepData.education as { entries: EducationEntry[] } } : {}),
           ...(stepData.skills ? { skills: stepData.skills as { skills: SkillEntry[] } } : {}),
           ...(stepData.experience ? { experience: stepData.experience as { entries: ExperienceEntry[] } } : {}),

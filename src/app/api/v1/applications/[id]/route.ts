@@ -30,7 +30,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           duration_months, compensation_type, deadline,
           organizations (id, name, logo_url, website)
         ),
-        application_documents (*),
         application_status_history (*)
       `)
       .eq('id', id)
@@ -76,7 +75,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           website: org.website ?? null,
         },
       },
-      documents: (application.application_documents ?? []),
+      documents: [],
       status_history: ((application.application_status_history ?? []) as { created_at: string }[]).sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       ),
@@ -85,7 +84,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     // Clean up nested fields
     delete (detail as Record<string, unknown>).opportunities;
-    delete (detail as Record<string, unknown>).application_documents;
+
     delete (detail as Record<string, unknown>).application_status_history;
 
     return NextResponse.json({ success: true, data: detail, error: null });
@@ -125,7 +124,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     // Optimistic locking: fetch + version check
     const { data: existing, error: fetchError } = await supabase
       .from('applications')
-      .select('id, student_id, status, version')
+      .select('id, student_id, status, version, cover_letter')
       .eq('id', id)
       .single();
 

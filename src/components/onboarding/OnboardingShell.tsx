@@ -19,7 +19,7 @@ export function OnboardingShell({ children, title, subtitle }: OnboardingShellPr
   const handleStepClick = (stepNum: number) => {
     const step = getStepByNumber(stepNum);
     if (step) {
-      router.push(`/onboarding/${step.slug}`);
+      router.push(`/student/onboarding/${step.slug}`);
     }
   };
 

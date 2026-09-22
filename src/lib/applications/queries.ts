@@ -23,20 +23,25 @@ export function buildApplicationListQuery(
   let query = supabase
     .from('applications')
     .select(`
-      id, status, match_score, submitted_at, created_at, updated_at, cover_letter,
+      id, status, submitted_at, created_at, updated_at, cover_letter,
       opportunities!inner (
         id, title, deadline, category, location_country, location_city,
         organizations (id, name, logo_url)
-      ),
-      application_documents (id)
+      )
     `, { count: 'exact' })
-    .eq('student_id', userId)
-    .is('deleted_at', null);
+    .eq('student_id', userId);
 
   if (filters.status) {
     const statuses = filters.status.split(',').map((s) => s.trim()).filter(Boolean);
-    if (statuses.length > 0) {
-      query = query.in('status', statuses);
+    const validDbStatuses = ['submitted', 'under_review', 'shortlisted', 'interview', 'offered', 'accepted', 'rejected', 'withdrawn'];
+    const validStatuses = statuses.filter(s => validDbStatuses.includes(s));
+    
+    if (validStatuses.length > 0) {
+      query = query.in('status', validStatuses);
+    } else if (statuses.length > 0) {
+      // They ONLY requested invalid statuses. Return empty.
+      // We can't return empty array directly from this query builder, so we force a false condition
+      query = query.eq('id', '00000000-0000-0000-0000-000000000000');
     }
   }
 
@@ -67,7 +72,6 @@ export function buildApplicationDetailQuery(
         duration_months, compensation_type, deadline,
         organizations (id, name, logo_url, website)
       ),
-      application_documents (*),
       application_status_history (*)
     `)
     .eq('id', applicationId)

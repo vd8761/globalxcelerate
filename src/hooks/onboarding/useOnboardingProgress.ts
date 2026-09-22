@@ -28,13 +28,12 @@ export function useOnboardingProgress() {
   useEffect(() => {
     if (query.data?.data) {
       const progress = query.data.data;
-      setCurrentStep(progress.current_step);
       setCompletionPercentage(progress.completion_percentage);
       if (progress.step_statuses) {
         hydrateFromServer(progress, progress.step_data ?? {});
       }
     }
-  }, [query.data, hydrateFromServer, setCurrentStep, setCompletionPercentage]);
+  }, [query.data, hydrateFromServer, setCompletionPercentage]);
 
   return {
     progress: query.data?.data ?? null,

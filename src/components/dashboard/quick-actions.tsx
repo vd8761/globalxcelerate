@@ -3,7 +3,7 @@ import { Search, User, FileText, Award } from 'lucide-react';
 
 const ACTIONS = [
   { label: 'Browse Opportunities', href: '/student/marketplace', Icon: Search },
-  { label: 'Edit Profile', href: '/student/onboarding', Icon: User },
+  { label: 'Edit Profile', href: '/student/profile', Icon: User },
   { label: 'View Applications', href: '/student/applications', Icon: FileText },
   { label: 'GX Score', href: '/student/gx-score', Icon: Award },
 ];

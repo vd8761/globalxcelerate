@@ -45,7 +45,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           phone, university, degree_program, graduation_year,
           gx_score, bio, linkedin_url, portfolio_url
         ),
-        application_documents (*),
         application_status_history (*)
       `)
       .eq('id', id)
@@ -102,7 +101,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         linkedin_url: student.linkedin_url,
         portfolio_url: student.portfolio_url,
       } : null,
-      documents: (application.application_documents ?? []),
+      documents: [],
       status_history: ((application.application_status_history ?? []) as { created_at: string }[]).sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       ),

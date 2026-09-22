@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html lang="en" data-scroll-behavior="smooth">
-      <body className={cn("min-h-screen bg-background")}>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+      <body className={cn("min-h-screen bg-background")} suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

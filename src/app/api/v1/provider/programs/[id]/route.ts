@@ -19,7 +19,7 @@ export async function PATCH(
 
     // Verify provider role
     const userRole = user.user_metadata?.role;
-    if (userRole !== 'employer' && userRole !== 'provider') {
+    if (userRole !== 'employer' && userRole !== 'program_provider') {
       return NextResponse.json(
         { success: false, data: null, error: { code: 'FORBIDDEN', message: 'Provider access required' } },
         { status: 403 }

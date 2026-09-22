@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 interface GXScoreWidgetProps {
   score: number | null;
@@ -85,12 +86,12 @@ export function GXScoreWidget({ score, grade }: GXScoreWidgetProps) {
         </p>
       )}
 
-      <a
-        href="#"
+      <Link
+        href="/student/gx-score"
         className="mt-3 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
       >
         Improve My Score →
-      </a>
+      </Link>
     </div>
   );
 }

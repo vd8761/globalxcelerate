@@ -35,7 +35,10 @@ export default function IdentityPage() {
   useEffect(() => {
     if (!initializedRef.current && identity.first_name) {
       initializedRef.current = true;
-      form.reset(identity);
+      form.reset({
+        ...identity,
+        date_of_birth: identity.date_of_birth?.substring(0, 10) || '',
+      });
     }
   }, [identity, form]);
 

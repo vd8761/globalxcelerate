@@ -13,7 +13,7 @@ interface MatchScoreCardProps {
 }
 
 export function MatchScoreCard({ opportunityId }: MatchScoreCardProps) {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { data, isLoading } = useMatchScore(opportunityId, !!user);
   const [expanded, setExpanded] = useState(false);
 
@@ -53,7 +53,7 @@ export function MatchScoreCard({ opportunityId }: MatchScoreCardProps) {
         <div className="text-center">
           <Sparkles className="w-6 h-6 text-slate-300 mx-auto mb-2" />
           <p className="text-sm text-slate-500">Complete your profile for match scoring</p>
-          <Link href="/student/onboarding" className="text-xs font-medium text-cyan-600 hover:text-cyan-700 mt-1 inline-block">
+          <Link href="/student/profile" className="text-xs font-medium text-cyan-600 hover:text-cyan-700 mt-1 inline-block">
             Complete Profile →
           </Link>
         </div>

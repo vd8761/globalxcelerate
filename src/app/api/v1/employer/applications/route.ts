@@ -57,14 +57,25 @@ export async function GET(request: NextRequest) {
       .select(`
         id, student_id, opportunity_id, status, match_score, submitted_at, cover_letter, created_at, updated_at
       `, { count: 'exact' })
-      .in('opportunity_id', oppIds)
-      .is('deleted_at', null);
+      .in('opportunity_id', oppIds);
 
     // Status filter
     if (status) {
       const statuses = status.split(',').map((s) => s.trim()).filter(Boolean);
-      if (statuses.length > 0) {
-        query = query.in('status', statuses);
+      const validDbStatuses = ['submitted', 'under_review', 'shortlisted', 'interview', 'offered', 'accepted', 'rejected', 'withdrawn'];
+      const validStatuses = statuses.filter(s => validDbStatuses.includes(s));
+
+      if (statuses.length > 0 && validStatuses.length === 0) {
+        return NextResponse.json({
+          success: true,
+          data: [],
+          error: null,
+          meta: { page, per_page, total: 0, total_pages: 0 },
+        });
+      }
+
+      if (validStatuses.length > 0) {
+        query = query.in('status', validStatuses);
       }
     }
 

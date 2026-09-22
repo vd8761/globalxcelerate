@@ -69,8 +69,10 @@ export default async function DashboardPage() {
     gx_score: null,
   };
 
+  const profileCompletion = user.user_metadata?.profile_completion ?? safeProfile.profile_completion ?? 0;
+
   // Compute GX grade
-  const gxScore = safeProfile.gx_score || null;
+  const gxScore = user.user_metadata?.gx_score ?? safeProfile.gx_score ?? null;
   let gxGrade: string | null = null;
   if (gxScore !== null) {
     if (gxScore >= 90) gxGrade = 'A+';
@@ -92,7 +94,7 @@ export default async function DashboardPage() {
         />
 
         {/* Profile completion + GX Score side by side */}
-        <ProfileCompletionWidget completionPercentage={safeProfile.profile_completion || 0} />
+        <ProfileCompletionWidget completionPercentage={profileCompletion} />
         <GXScoreWidget score={gxScore} grade={gxGrade} />
 
         {/* Quick actions — full width */}

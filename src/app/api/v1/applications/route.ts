@@ -31,22 +31,32 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('applications')
       .select(`
-        id, status, match_score, submitted_at, created_at, updated_at, cover_letter,
+        id, status, submitted_at, created_at, updated_at, cover_letter,
         opportunities!inner (
           id, title, application_deadline, category,
           location_country, location_city,
           organizations (id, name, logo_url)
-        ),
-        application_documents (id)
+        )
       `, { count: 'exact' })
-      .eq('student_id', user.id)
-      .is('deleted_at', null);
+      .eq('student_id', user.id);
 
     // Status filter
     if (status) {
       const statuses = status.split(',').map((s) => s.trim()).filter(Boolean);
-      if (statuses.length > 0) {
-        query = query.in('status', statuses);
+      const validDbStatuses = ['submitted', 'under_review', 'shortlisted', 'interview', 'offered', 'accepted', 'rejected', 'withdrawn'];
+      const validStatuses = statuses.filter(s => validDbStatuses.includes(s));
+
+      if (statuses.length > 0 && validStatuses.length === 0) {
+        return NextResponse.json({
+          success: true,
+          data: [],
+          error: null,
+          meta: { page, per_page, total: 0, total_pages: 0 },
+        });
+      }
+
+      if (validStatuses.length > 0) {
+        query = query.in('status', validStatuses);
       }
     }
 
@@ -56,7 +66,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Sorting
-    const sortColumn = sort_by === 'status' ? 'status' : sort_by === 'match_score' ? 'match_score' : sort_by;
+    const sortColumn = sort_by === 'status' ? 'status' : sort_by === 'match_score' ? 'created_at' : sort_by;
     query = query.order(sortColumn, { ascending: sort_order === 'asc', nullsFirst: false });
 
     // Pagination
@@ -77,12 +87,12 @@ export async function GET(request: NextRequest) {
     const items = (data ?? []).map((row: Record<string, unknown>) => {
       const opp = row.opportunities as Record<string, unknown> | null;
       const org = (opp?.organizations as Record<string, unknown>) ?? {};
-      const docs = (row.application_documents as unknown[]) ?? [];
+      const docs: unknown[] = [];
 
       return {
         id: row.id,
         status: row.status,
-        match_score: row.match_score,
+        match_score: null,
         submitted_at: row.submitted_at,
         created_at: row.created_at,
         updated_at: row.updated_at,
@@ -181,7 +191,6 @@ export async function POST(request: NextRequest) {
       .select('id')
       .eq('student_id', user.id)
       .eq('opportunity_id', opportunity_id)
-      .is('deleted_at', null)
       .maybeSingle();
 
     if (existing) {

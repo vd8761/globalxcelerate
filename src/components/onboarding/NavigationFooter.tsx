@@ -2,6 +2,7 @@
 
 import { ArrowLeft, ArrowRight, SkipForward, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useOnboardingStore } from '@/stores/onboarding-store';
 
 interface NavigationFooterProps {
   onBack?: () => void;
@@ -26,7 +27,9 @@ export function NavigationFooter({
   isLoading = false,
   nextLabel,
 }: NavigationFooterProps) {
-  const label = nextLabel ?? (isLastStep ? 'Review Profile' : 'Save & Continue');
+  const { stepStatuses } = useOnboardingStore();
+  const isEditing = stepStatuses['complete'] === 'completed';
+  const label = nextLabel ?? (isLastStep ? 'Review Profile' : isEditing ? 'Save Changes' : 'Save & Continue');
 
   return (
     <div className="flex items-center justify-between pt-6 mt-6 border-t border-slate-100">

@@ -23,8 +23,8 @@ export default async function RoleSelectPage() {
     redirect(ROLE_DASHBOARDS[existingRole]);
   }
 
-  // Simple admin eligibility check
-  const isAdminEligible = user.email?.endsWith('@globalxcelerate.com') || false;
+  // Platform Admin is hidden from the UI entirely
+  const isAdminEligible = false;
 
   return (
     <div className="animate-fade-in">

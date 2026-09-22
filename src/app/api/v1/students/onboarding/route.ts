@@ -87,6 +87,13 @@ export async function PATCH(request: NextRequest) {
     // Save data based on step
     if (data) {
       await saveStepData(supabase, user.id, step, data);
+
+      // Save the full raw data payload into user_metadata to prevent data loss
+      await supabase.auth.updateUser({
+        data: {
+          [`${step}_data`]: data
+        }
+      });
     }
 
     // Calculate completion
@@ -173,6 +180,12 @@ async function saveStepData(
           current_country: data.country_of_residence as string || null,
           current_city: data.city as string || null,
           email: data.email as string || null,
+          date_of_birth: data.date_of_birth as string || null,
+          gender: data.gender as string || null,
+          pronouns: data.pronouns as string || null,
+          phone_number: data.phone_number as string || null,
+          bio: data.bio as string || null,
+          profile_photo_url: data.profile_photo_url as string || null,
         }, { onConflict: 'user_id' });
       break;
     }

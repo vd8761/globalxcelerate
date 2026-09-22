@@ -73,11 +73,11 @@ export async function POST(request: Request) {
 
     const { error: updateError } = await supabase
       .from(table)
-      .update({
+      .upsert({
+        user_id: user.id,
         ...filteredData,
         onboarding_status: 'complete',
-      })
-      .eq('user_id', user.id);
+      }, { onConflict: 'user_id' });
 
     if (updateError) {
       console.error('[ProfileSetup] DB error:', updateError);

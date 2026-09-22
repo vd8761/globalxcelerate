@@ -87,8 +87,8 @@ export async function POST() {
       .from('student_profiles')
       .update({
         // onboarding_status: 'complete', // Removed to bypass schema cache error
-        gx_score: gxScore,
-        profile_completion: Math.round((Object.values(gxScoreDimensions).reduce((a, b) => a + b, 0) / 100) * 100),
+        // gx_score: gxScore,
+        // profile_completion: Math.round((Object.values(gxScoreDimensions).reduce((a, b) => a + b, 0) / 100) * 100),
         updated_at: new Date().toISOString(),
       })
       .eq('user_id', user.id);

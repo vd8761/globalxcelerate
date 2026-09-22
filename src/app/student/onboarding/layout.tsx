@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
+import { OnboardingHydration } from '@/components/onboarding/OnboardingHydration';
+import { OnboardingExitLink } from '@/components/onboarding/OnboardingExitLink';
 
 export const metadata: Metadata = {
   title: 'Complete Your Profile | GlobalXcelerate',
@@ -13,6 +15,7 @@ export default function OnboardingLayout({
 }) {
   return (
     <div className="min-h-screen bg-slate-50">
+      <OnboardingHydration />
       {/* Minimal top bar */}
       <header className="sticky top-0 z-40 border-b border-slate-200/60 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
@@ -22,12 +25,7 @@ export default function OnboardingLayout({
             </div>
             <span className="font-display font-bold text-lg text-slate-900 hidden sm:inline">GlobalXcelerate</span>
           </div>
-          <a
-            href="/student/dashboard"
-            className="text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors"
-          >
-            Save & Exit
-          </a>
+          <OnboardingExitLink />
         </div>
       </header>
 
